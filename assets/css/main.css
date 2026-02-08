@@ -2373,6 +2373,17 @@
 				width: 50%;
 			}
 
+		.image.minicenter {
+			display: block;
+			margin-left: 33%;
+			width: 100%;
+		}
+		  .image.minicenter img {
+				width: 33%;
+				margin-left: 33%;
+				margin-right: 33%;
+			}
+
 		.image.twocenter {
 				display: block;
 				margin-left: 0%;
@@ -2499,6 +2510,24 @@
 			  transition: .3s ease-in-out;
 			}
 			.zoomimage.center img:hover{
+				-webkit-transform: scale(1.3);
+			  transform: scale(1.3);
+			}
+
+		.zoomimage.minicenter {
+			display: block;
+			margin-left: 33%;
+			width: 33%;
+		}
+		  .zoomimage.minicenter img {
+				width: 100%;
+				background: #fff;
+				-webkit-transform: scale(1);
+			  transform: scale(1);
+				-webkit-transition: .3s ease-in-out;
+			  transition: .3s ease-in-out;
+			}
+			.zoomimage.minicenter img:hover{
 				-webkit-transform: scale(1.3);
 			  transform: scale(1.3);
 			}
