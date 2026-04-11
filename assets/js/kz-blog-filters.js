@@ -14,8 +14,25 @@
 	var posts = [];
 	var timeFilter  = 'all';
 	var topicFilter = 'all';
+	var newestFirst = true;
 	var visible     = PER_PAGE;
 	var timeDataAttr = 'blogYear';
+
+	function getSortedPosts() {
+		return posts.slice().sort(function (a, b) {
+			var aIdx = parseInt(a.dataset.domIndex || '0', 10);
+			var bIdx = parseInt(b.dataset.domIndex || '0', 10);
+			return newestFirst ? (aIdx - bIdx) : (bIdx - aIdx);
+		});
+	}
+
+	function updateSortButtons() {
+		document.querySelectorAll('[data-filter-sort]').forEach(function (btn) {
+			var value = (btn.getAttribute('data-filter-sort') || '').toLowerCase();
+			var isActive = (newestFirst && value === 'newest') || (!newestFirst && value === 'oldest');
+			btn.classList.toggle('active', isActive);
+		});
+	}
 
 	/* 1. Tag each blog-post section */
 	function initPosts() {
@@ -25,7 +42,7 @@
 			: 'section.wrapper[data-blog-week]';
 		timeDataAttr = (selector.indexOf('blog-week') !== -1) ? 'blogWeek' : 'blogYear';
 
-		Array.from(document.querySelectorAll(selector)).forEach(function (sec) {
+		Array.from(document.querySelectorAll(selector)).forEach(function (sec, idx) {
 			var h2 = sec.querySelector('h2');
 			if (!h2) return;
 			var txt = h2.textContent.trim();
@@ -44,6 +61,7 @@
 			sec.dataset.time = timeValue;
 			sec.dataset.topics = topicsStr;
 			sec.dataset.order = order;
+			sec.dataset.domIndex = idx;
 			sec.id = (key === 'epilogue') ? 'epilogue' : ('day' + key.replace('.', '-'));
 
 			// Inject tag pills after the giscus comment box (or after heading if no giscus)
@@ -60,14 +78,13 @@
 			posts.push(sec);
 		});
 
-		/* 2. Reorder DOM: newest first (Epilogue … Day 18 … Day 1) */
-		posts.sort(function (a, b) { return parseFloat(b.dataset.order) - parseFloat(a.dataset.order); });
-		posts.forEach(function (p) { p.parentNode.insertBefore(p, loadMore); });
+		/* 2. Reorder DOM by selected sort */
+		getSortedPosts().forEach(function (p) { p.parentNode.insertBefore(p, loadMore); });
 	}
 
 	/* 3. Filtering */
 	function matching() {
-		return posts.filter(function (p) {
+		return getSortedPosts().filter(function (p) {
 			var yOk = timeFilter  === 'all' || p.dataset.time === timeFilter;
 			var tOk = topicFilter === 'all' || p.dataset.topics.split(' ').indexOf(topicFilter) !== -1;
 			return yOk && tOk;
@@ -103,12 +120,23 @@
 			params.get('filter-topic') ||
 			''
 		).trim();
+		var urlOrder = (
+			params.get('order') ||
+			params.get('sort') ||
+			''
+		).trim().toLowerCase();
 
 		if (urlTime && setActiveButton('[data-filter-time]', urlTime)) {
 			timeFilter = urlTime;
 		}
 		if (urlTopic && setActiveButton('[data-filter-topic]', urlTopic)) {
 			topicFilter = urlTopic;
+		}
+		if (urlOrder === 'oldest' || urlOrder === 'asc' || urlOrder === 'ascending') {
+			newestFirst = false;
+		}
+		if (urlOrder === 'newest' || urlOrder === 'desc' || urlOrder === 'descending') {
+			newestFirst = true;
 		}
 	}
 
@@ -124,11 +152,19 @@
 		} else {
 			url.searchParams.set('topic', topicFilter);
 		}
+		if (newestFirst) {
+			url.searchParams.delete('order');
+		} else {
+			url.searchParams.set('order', 'oldest');
+		}
 		window.history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + (url.hash ? url.hash : ''));
 	}
 
 	/* 4. Render visible posts + update controls */
 	function render() {
+		var loadMore = document.getElementById('load-more-section');
+		getSortedPosts().forEach(function (p) { p.parentNode.insertBefore(p, loadMore); });
+
 		var m = matching();
 		posts.forEach(function (p) { p.style.display = 'none'; });
 		m.slice(0, visible).forEach(function (p) { p.style.display = ''; });
@@ -169,6 +205,37 @@
 			var f = document.getElementById('blog-filters');
 			if (f) f.scrollIntoView({ behavior: 'smooth' });
 		}
+
+		var sortButtons = document.querySelectorAll('[data-filter-sort]');
+		if (sortButtons.length === 0) {
+			var countEl = document.getElementById('blog-post-count');
+			if (countEl && countEl.parentNode) {
+				countEl.insertAdjacentHTML('beforebegin',
+					'<div style="margin-top:0.6em; margin-bottom:0.4em;">' +
+						'<span class="blog-filter-label">Sort Posts</span>' +
+						'<div class="blog-filter-group">' +
+							'<button class="filter-btn" data-filter-sort="newest" type="button">Most Recent First</button>' +
+							'<button class="filter-btn" data-filter-sort="oldest" type="button">Oldest First</button>' +
+						'</div>' +
+					'</div>'
+				);
+				sortButtons = document.querySelectorAll('[data-filter-sort]');
+			}
+		}
+		if (sortButtons.length > 0) {
+			updateSortButtons();
+			sortButtons.forEach(function (btn) {
+				btn.addEventListener('click', function () {
+					newestFirst = this.dataset.filterSort === 'newest';
+				visible = PER_PAGE;
+				updateSortButtons();
+				render();
+				syncUrlWithFilters();
+				scrollToFilters();
+				});
+			});
+		}
+
 		document.querySelectorAll('[data-filter-time]').forEach(function (btn) {
 			btn.addEventListener('click', function () {
 				document.querySelectorAll('[data-filter-time]').forEach(function (b) { b.classList.remove('active'); });
@@ -215,6 +282,7 @@
 	initPosts();
 	applyInitialFiltersFromUrl();
 	attachFilters();
+	updateSortButtons();
 	render();
 	handleHash();
 }());
