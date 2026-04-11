@@ -278,6 +278,25 @@
 		}
 	}
 
+	/* Giscus iframes: align origin/backLink with current URL, then resize on postMessage */
+	(function syncGiscusIframeParams() {
+		var pageUrl = new URL(window.location.href);
+		pageUrl.searchParams.delete('giscus');
+		pageUrl.hash = '';
+		var cleanUrl = pageUrl.toString();
+
+		document.querySelectorAll('iframe.giscus-frame').forEach(function (iframe) {
+			try {
+				var src = iframe.getAttribute('src');
+				if (!src) return;
+				var u = new URL(src, window.location.href);
+				u.searchParams.set('origin', cleanUrl);
+				u.searchParams.set('backLink', cleanUrl);
+				iframe.setAttribute('src', u.toString());
+			} catch (err) {}
+		});
+	}());
+
 	/* Giscus iframe: resize on postMessage */
 	window.addEventListener('message', function (e) {
 		if (e.origin !== 'https://giscus.app') return;
