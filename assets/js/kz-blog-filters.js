@@ -299,9 +299,9 @@
 	(function syncGiscusIframeParams() {
 		var pageUrl = new URL(window.location.href);
 		pageUrl.searchParams.delete('giscus');
+		var backLinkUrl = pageUrl.toString();
 		pageUrl.hash = '';
 		var cleanUrl = pageUrl.toString();
-		var pageOrigin = pageUrl.origin;
 		var session = getGiscusSession();
 
 		document.querySelectorAll('iframe.giscus-frame').forEach(function (iframe) {
@@ -309,7 +309,7 @@
 				var term = iframe.getAttribute('data-term');
 				if (!term) return;
 				var u = new URL('https://giscus.app/en/widget');
-				u.searchParams.set('origin', pageOrigin);
+				u.searchParams.set('origin', cleanUrl);
 				u.searchParams.set('session', session || '');
 				u.searchParams.set('theme', 'light');
 				u.searchParams.set('reactionsEnabled', '1');
@@ -321,7 +321,7 @@
 				u.searchParams.set('categoryId', 'DIC_kwDOR7bWu84C6MXd');
 				u.searchParams.set('strict', '0');
 				u.searchParams.set('description', '');
-				u.searchParams.set('backLink', cleanUrl);
+				u.searchParams.set('backLink', backLinkUrl);
 				u.searchParams.set('mapping', 'specific');
 				u.searchParams.set('term', term);
 				iframe.setAttribute('src', u.toString());
