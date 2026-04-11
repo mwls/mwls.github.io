@@ -46,8 +46,9 @@
 			sec.dataset.order = order;
 			sec.id = (key === 'epilogue') ? 'epilogue' : ('day' + key.replace('.', '-'));
 
-			// Inject tag pills right after the heading <p>
-			var anchor = h2.closest('p') || h2.parentNode;
+			// Inject tag pills after the giscus comment box (or after heading if no giscus)
+			var giscusScript = sec.querySelector('script[data-repo="mwls/mwlsmith-comments"]');
+			var anchor = giscusScript || h2.closest('p') || h2.parentNode;
 			if (anchor) {
 				var html = '<div class="post-tags"><span class="post-tag">' + (TIME_LABEL[timeValue] || timeValue) + '</span>';
 				topicsStr.split(' ').forEach(function (t) {
