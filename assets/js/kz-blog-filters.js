@@ -332,6 +332,14 @@
 	/* Giscus iframe: resize on postMessage */
 	window.addEventListener('message', function (e) {
 		if (e.origin !== 'https://giscus.app') return;
+		if (typeof e.data === 'object' && e.data.giscus && typeof e.data.giscus.error === 'string') {
+			var msg = e.data.giscus.error;
+			if (msg.indexOf('Bad credentials') !== -1 || msg.indexOf('Invalid state value') !== -1 || msg.indexOf('State has expired') !== -1) {
+				try { localStorage.removeItem('giscus-session'); } catch (err) {}
+				window.location.reload();
+				return;
+			}
+		}
 		if (typeof e.data === 'object' && e.data.giscus && e.data.giscus.signOut) {
 			try { localStorage.removeItem('giscus-session'); } catch (err) {}
 			window.location.reload();
