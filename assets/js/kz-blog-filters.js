@@ -284,14 +284,28 @@
 		pageUrl.searchParams.delete('giscus');
 		pageUrl.hash = '';
 		var cleanUrl = pageUrl.toString();
+		var pageOrigin = pageUrl.origin;
 
 		document.querySelectorAll('iframe.giscus-frame').forEach(function (iframe) {
 			try {
-				var src = iframe.getAttribute('src');
-				if (!src) return;
-				var u = new URL(src, window.location.href);
-				u.searchParams.set('origin', cleanUrl);
+				var term = iframe.getAttribute('data-term');
+				if (!term) return;
+				var u = new URL('https://giscus.app/en/widget');
+				u.searchParams.set('origin', pageOrigin);
+				u.searchParams.set('session', '');
+				u.searchParams.set('theme', 'light');
+				u.searchParams.set('reactionsEnabled', '1');
+				u.searchParams.set('emitMetadata', '0');
+				u.searchParams.set('inputPosition', 'bottom');
+				u.searchParams.set('repo', 'mwls/mwlsmith-comments');
+				u.searchParams.set('repoId', 'R_kgDOR7bWuw');
+				u.searchParams.set('category', 'Blog Post Comments');
+				u.searchParams.set('categoryId', 'DIC_kwDOR7bWu84C6MXd');
+				u.searchParams.set('strict', '0');
+				u.searchParams.set('description', '');
 				u.searchParams.set('backLink', cleanUrl);
+				u.searchParams.set('mapping', 'specific');
+				u.searchParams.set('term', term);
 				iframe.setAttribute('src', u.toString());
 			} catch (err) {}
 		});
