@@ -5528,11 +5528,81 @@
 		    cursor: pointer;
 		}
 
+		/* Blog filters/tags (KZ teaching blog) */
+		#blog-filters .filter-btn {
+			display: inline-block !important;
+			margin: 0.2em 0.25em !important;
+			padding: 0.4em 1em !important;
+			border: 2px solid #8a4680 !important;
+			background-color: #fff !important;
+			color: #333 !important;
+			border-radius: 2em !important;
+			cursor: pointer !important;
+			font-size: 0.9em !important;
+			font-family: inherit !important;
+			line-height: 1.2 !important;
+			height: auto !important;
+			text-transform: none !important;
+			transition: background-color 0.18s, color 0.18s, border-color 0.18s !important;
+		}
+
+		#blog-filters .filter-btn:hover {
+			background-color: #f3e8f2 !important;
+			color: #333 !important;
+		}
+
+		#blog-filters .filter-btn.active {
+			background-color: #8a4680 !important;
+			border-color: #8a4680 !important;
+			color: #fff !important;
+		}
+
+		#blog-filters .blog-filter-group {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.1em;
+			margin-top: 0.45em;
+		}
+
+		#blog-filters .blog-filter-label {
+			display: block;
+			margin-bottom: 0.3em;
+			font-size: 0.82em;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: #8a4680;
+			font-weight: bold;
+		}
+
+		#blog-post-count {
+			color: #999;
+			font-size: 0.85em;
+			margin-top: 1em;
+			font-style: italic;
+		}
+
+		.post-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.4em;
+			margin: 0.1em 0 0.9em 0;
+		}
+
+		.post-tag {
+			font-size: 0.72em;
+			padding: 0.22em 0.7em;
+			background: rgba(138,70,128,0.07);
+			border: 1px solid rgba(138,70,128,0.25);
+			border-radius: 1em;
+			color: #8a4680;
+			white-space: nowrap;
+		}
+
 		/* 100% Image Width on Smaller Screens */
 		@media only screen and (max-width: 700px){
-		    .modal-content {
-		        width: 100%;
-		    }
+			.modal-content {
+				width: 100%;
+			}
 		}
 		#myImg {
 				border-radius: 5px;
