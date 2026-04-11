@@ -65,8 +65,8 @@
 			sec.id = (key === 'epilogue') ? 'epilogue' : ('day' + key.replace('.', '-'));
 
 			// Inject tag pills after the giscus comment box (or after heading if no giscus)
-			var giscusScript = sec.querySelector('script[data-repo="mwls/mwlsmith-comments"]');
-			var anchor = giscusScript || h2.closest('p') || h2.parentNode;
+			var giscusEl = sec.querySelector('.giscus, script[data-repo="mwls/mwlsmith-comments"]');
+			var anchor = giscusEl || h2.closest('p') || h2.parentNode;
 			if (anchor) {
 				var html = '<div class="post-tags"><span class="post-tag">' + (TIME_LABEL[timeValue] || timeValue) + '</span>';
 				topicsStr.split(' ').forEach(function (t) {
@@ -277,6 +277,21 @@
 			setTimeout(function () { target.scrollIntoView({ behavior: 'smooth' }); }, 80);
 		}
 	}
+
+	/* Giscus iframe: reveal on load + resize on postMessage */
+	document.querySelectorAll('iframe.giscus-frame').forEach(function (iframe) {
+		iframe.addEventListener('load', function () {
+			iframe.style.removeProperty('opacity');
+			iframe.classList.remove('giscus-frame--loading');
+		});
+	});
+	window.addEventListener('message', function (e) {
+		if (e.origin !== 'https://giscus.app') return;
+		if (typeof e.data !== 'object' || !e.data.giscus || !e.data.giscus.resizeHeight) return;
+		document.querySelectorAll('iframe.giscus-frame').forEach(function (iframe) {
+			try { if (iframe.contentWindow === e.source) iframe.style.height = e.data.giscus.resizeHeight + 'px'; } catch (err) {}
+		});
+	});
 
 	/* Init */
 	initPosts();
