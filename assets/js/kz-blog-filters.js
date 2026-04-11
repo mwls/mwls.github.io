@@ -278,6 +278,23 @@
 		}
 	}
 
+	/* Giscus auth/session helper */
+	function getGiscusSession() {
+		var url = new URL(window.location.href);
+		var fromUrl = url.searchParams.get('giscus');
+		if (fromUrl) {
+			try { localStorage.setItem('giscus-session', JSON.stringify(fromUrl)); } catch (e) {}
+			url.searchParams.delete('giscus');
+			history.replaceState({}, document.title, url.pathname + (url.search ? url.search : '') + (url.hash ? url.hash : ''));
+			return fromUrl;
+		}
+		try {
+			var stored = localStorage.getItem('giscus-session');
+			if (stored) return JSON.parse(stored);
+		} catch (e) {}
+		return '';
+	}
+
 	/* Giscus iframes: align origin/backLink with current URL, then resize on postMessage */
 	(function syncGiscusIframeParams() {
 		var pageUrl = new URL(window.location.href);
@@ -285,6 +302,7 @@
 		pageUrl.hash = '';
 		var cleanUrl = pageUrl.toString();
 		var pageOrigin = pageUrl.origin;
+		var session = getGiscusSession();
 
 		document.querySelectorAll('iframe.giscus-frame').forEach(function (iframe) {
 			try {
@@ -292,7 +310,7 @@
 				if (!term) return;
 				var u = new URL('https://giscus.app/en/widget');
 				u.searchParams.set('origin', pageOrigin);
-				u.searchParams.set('session', '');
+				u.searchParams.set('session', session || '');
 				u.searchParams.set('theme', 'light');
 				u.searchParams.set('reactionsEnabled', '1');
 				u.searchParams.set('emitMetadata', '0');
@@ -314,6 +332,11 @@
 	/* Giscus iframe: resize on postMessage */
 	window.addEventListener('message', function (e) {
 		if (e.origin !== 'https://giscus.app') return;
+		if (typeof e.data === 'object' && e.data.giscus && e.data.giscus.signOut) {
+			try { localStorage.removeItem('giscus-session'); } catch (err) {}
+			window.location.reload();
+			return;
+		}
 		if (typeof e.data !== 'object' || !e.data.giscus || !e.data.giscus.resizeHeight) return;
 		document.querySelectorAll('iframe.giscus-frame').forEach(function (iframe) {
 			try { if (iframe.contentWindow === e.source) iframe.style.height = e.data.giscus.resizeHeight + 'px'; } catch (err) {}
