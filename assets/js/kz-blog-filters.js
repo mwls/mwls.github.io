@@ -278,13 +278,7 @@
 		}
 	}
 
-	/* Giscus iframe: reveal on load + resize on postMessage */
-	document.querySelectorAll('iframe.giscus-frame').forEach(function (iframe) {
-		iframe.addEventListener('load', function () {
-			iframe.style.removeProperty('opacity');
-			iframe.classList.remove('giscus-frame--loading');
-		});
-	});
+	/* Giscus iframe: resize on postMessage */
 	window.addEventListener('message', function (e) {
 		if (e.origin !== 'https://giscus.app') return;
 		if (typeof e.data !== 'object' || !e.data.giscus || !e.data.giscus.resizeHeight) return;
