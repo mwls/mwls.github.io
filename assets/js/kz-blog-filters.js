@@ -62,7 +62,9 @@
 			sec.dataset.topics = topicsStr;
 			sec.dataset.order = order;
 			sec.dataset.domIndex = idx;
-			sec.id = (key === 'epilogue') ? 'epilogue' : ('day' + key.replace('.', '-'));
+			if (!sec.id || sec.id === 'other') {
+				sec.id = (key === 'epilogue') ? 'epilogue' : ('day' + key.replace('.', '-'));
+			}
 
 			// Inject tag pills after the giscus comment box (or after heading if no giscus)
 			var giscusEl = sec.querySelector('.giscus, script[data-repo="mwls/mwlsmith-comments"]');
@@ -169,17 +171,18 @@
 		posts.forEach(function (p) { p.style.display = 'none'; });
 		m.slice(0, visible).forEach(function (p) { p.style.display = ''; });
 
-		var countEl = document.getElementById('blog-post-count');
-		if (countEl) {
-			var shown = Math.min(m.length, visible);
-			if (m.length === 0) {
-				countEl.textContent = '';
-			} else if (shown >= m.length) {
-				countEl.textContent = 'Showing all ' + m.length + ' post' + (m.length !== 1 ? 's' : '') + '.';
+		var shown = Math.min(m.length, visible);
+		var countText = '';
+		if (m.length !== 0) {
+			if (shown >= m.length) {
+				countText = 'Showing all ' + m.length + ' post' + (m.length !== 1 ? 's' : '') + '.';
 			} else {
-				countEl.textContent = 'Showing ' + shown + ' of ' + m.length + ' posts.';
+				countText = 'Showing ' + shown + ' of ' + m.length + ' posts.';
 			}
 		}
+		document.querySelectorAll('#blog-post-count, #blog-post-count-bottom').forEach(function (countEl) {
+			countEl.textContent = countText;
+		});
 
 		var lms   = document.getElementById('load-more-section');
 		var lmb   = document.getElementById('load-more-btn');
@@ -261,8 +264,13 @@
 		var lmb = document.getElementById('load-more-btn');
 		if (lmb) {
 			lmb.addEventListener('click', function () {
+				var currentMatches = matching();
+				var firstNewPost = currentMatches[visible] || null;
 				visible += PER_PAGE;
 				render();
+				if (firstNewPost) {
+					firstNewPost.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
 			});
 		}
 	}
