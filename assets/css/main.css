@@ -2364,6 +2364,39 @@
 				width: 100%;
 			}
 
+		/* Reusable blog section header (date + divider + title) */
+		.blog-post-header {
+			--meta-color: #bbb;
+			--divider-width: 80%;
+			width: 100%;
+			text-align: left;
+			margin: 0 0 0.0em;
+		}
+
+		.blog-post-header::before {
+			content: attr(data-date);
+			display: block;
+			text-align: center;
+			margin: 0 0 0.35em;
+			color: var(--meta-color);
+			text-transform: uppercase;
+			font-size: .75rem;
+			font-weight: 300;
+			letter-spacing: .25rem;
+		}
+
+		.blog-post-header .blog-post-divider {
+			display: block;
+			width: var(--divider-width);
+			height: 1px;
+			margin: 0 auto;
+			background: var(--meta-color);
+		}
+
+		.blog-post-header > h2 {
+			margin-top: 0.5em;
+		}
+
 		.image.center {
 			display: block;
 			margin-left: 25%;

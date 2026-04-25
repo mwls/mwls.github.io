@@ -1,0 +1,57 @@
+Kashmir Teaching Blog - Adding Metadata to New Posts
+=====================================================
+
+When you write a new blog post, add these data attributes to the <section> tag:
+
+<section id="other" class="wrapper style2" data-blog-week="WEEK" data-blog-topics="TOPICS" data-blog-order="ORDER">
+
+Available values:
+
+data-blog-week: 
+  - week1  (Days 1-7)
+  - week2  (Days 8-14)
+  - week3  (Final days, Day 15+)
+
+data-blog-topics: (space-separated list, e.g. "teaching culture")
+  - teaching
+  - culture
+  - tourism
+  - social
+  - sports
+  - travel
+
+data-blog-order:
+  - Use a number (1, 2, 3, ..., 18)
+  - Use 20+ for epilogue (e.g., 20)
+  - Can use decimals for special entries (e.g., 16.5)
+
+Example:
+<section id="other" class="wrapper style2" data-blog-week="week2" data-blog-topics="teaching social" data-blog-order="12">
+
+The blog system will:
+- Automatically tag the post with week and topic pills
+- Allow filtering by time period and topic
+- Paginate (3 posts at a time by default)
+- Sort newest-first
+
+Current Post Metadata:
+======================
+Day 1  - week1 - travel                    - order 1
+Day 2  - week1 - culture travel            - order 2
+Day 3  - week1 - tourism culture           - order 3
+Day 4  - week1 - tourism culture           - order 4
+Day 5  - week1 - teaching                  - order 5
+Day 6  - week1 - teaching social           - order 6
+Day 7  - week1 - social culture            - order 7
+Day 8  - week2 - teaching                  - order 8
+Day 10 - week2 - social culture            - order 10
+Day 11 - week2 - social culture            - order 11
+Day 12 - week2 - sports social             - order 12
+Day 13 - week2 - culture social tourism    - order 13
+Day 14 - week2 - teaching                  - order 14
+Day 15 - week3 - sports social             - order 15
+Day 16 - week3 - teaching culture          - order 16
+Day 16.5 - week3 - culture                 - order 16.5
+Day 17 - week3 - teaching social sports    - order 17
+Day 18 - week3 - travel                    - order 18
+Epilogue - week3 - travel tourism social   - order 20
