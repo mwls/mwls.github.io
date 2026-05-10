@@ -278,8 +278,20 @@
 	/* 6. Hash navigation: reveal post if linked directly */
 	function handleHash() {
 		if (!window.location.hash) return;
-		var target = document.querySelector(window.location.hash);
+		var targetId = '';
+		try {
+			targetId = decodeURIComponent(window.location.hash.slice(1));
+		} catch (e) {
+			targetId = window.location.hash.slice(1);
+		}
+		if (!targetId) return;
+		var target = document.getElementById(targetId);
 		if (target && target.classList.contains('blog-post')) {
+			// Ensure direct links work even if filters/pagination were active.
+			timeFilter = 'all';
+			topicFilter = 'all';
+			setActiveButton('[data-filter-time]', 'all');
+			setActiveButton('[data-filter-topic]', 'all');
 			visible = posts.length;
 			render();
 			setTimeout(function () { target.scrollIntoView({ behavior: 'smooth' }); }, 80);
@@ -366,4 +378,5 @@
 	updateSortButtons();
 	render();
 	handleHash();
+	window.addEventListener('hashchange', handleHash);
 }());
